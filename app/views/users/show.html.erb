@@ -1,0 +1,7 @@
+<div class="container bg-light">
+  <% flash.each do |message_type, message| %>
+      <div class="alert alert-<%= message_type %>"><%= message %></div>
+  <% end %>
+  <h3><%= @user.name %></h3>
+  <h4><%= @user.email %></h4>
+</div>

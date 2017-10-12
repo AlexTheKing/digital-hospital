@@ -1,0 +1,39 @@
+<%= provide :title, "Sign Up" %>
+<h1>Sign up</h1>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@user) do |f| %>
+        <%= render 'shared/error_messages' %>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><%= f.label :name %></span>
+          <%= f.text_field :name, class: 'form-control',
+                           :placeholder => :name,
+                           'aria-label' => :name,
+                           'aria-describedBy' => 'basic-addon1' %>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><%= f.label :email %></span>
+          <%= f.text_field :email, class: 'form-control',
+                           :placeholder => :email,
+                           'aria-label' => :email,
+                           'aria-describedBy' => 'basic-addon1' %>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><%= f.label :password %></span>
+          <%= f.password_field :password, class: 'form-control',
+                           :placeholder => :password,
+                           'aria-label' => :password,
+                           'aria-describedBy' => 'basic-addon1' %>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><%= f.label :password_confirmation, "Confirmation" %></span>
+          <%= f.password_field :password_confirmation, class: 'form-control',
+                           :placeholder => :password_confirmation,
+                           'aria-label' => :password_confirmation,
+                           'aria-describedBy' => 'basic-addon1' %>
+        </div>
+
+        <%= f.submit "Submit", class: "btn btn-success btn-lg center-block" %>
+    <% end %>
+  </div>
+</div>

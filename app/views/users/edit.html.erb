@@ -1,25 +1,87 @@
 <% provide(:title, "Edit profile") %>
 <h1>Edit your profile</h1>
-
+<% flash.each do |message_type, message| %>
+    <div class="alert alert-<%= message_type %>"><%= message %></div>
+<% end %>
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <%= form_for(@user) do |f| %>
         <%= render 'shared/error_messages' %>
+        <div class="input-group">
+          <%= f.label :name %>
+          <%= f.text_field :name, class: 'form-control' %>
+        </div>
 
-        <%= f.label :name %>
-        <%= f.text_field :name, class: 'form-control' %>
+        <div class="input-group">
+          <%= f.label :email %>
+          <%= f.email_field :email, class: 'form-control' %>
+        </div>
 
-        <%= f.label :email %>
-        <%= f.email_field :email, class: 'form-control' %>
+        <div class="input-group">
+          <%= f.label :password, 'New password' %>
+          <%= f.password_field :password, class: 'form-control' %>
+        </div>
 
-        <%= f.label :password %>
-        <%= f.password_field :password, class: 'form-control' %>
+        <div class="input-group">
+          <%= f.label :password_confirmation, "Confirmation" %>
+          <%= f.password_field :password_confirmation, class: 'form-control' %>
+        </div>
 
-        <%= f.label :password_confirmation, "Confirmation" %>
-        <%= f.password_field :password_confirmation, class: 'form-control' %>
+        <button type="button" class="btn btn-primary btn-submit" data-toggle="modal" data-target="#basicSaveModal">
+          Save changes
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="basicSaveModal" tabindex="-1" role="dialog" aria-labelledby="basicSaveModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="modal-title" id="basicSaveModalLabel">Please type in password</h3>
+              </div>
+              <div class="modal-body">
+                <div class="input-group">
+                  <%= f.label :old_password, 'Password to perform any changes' %>
+                  <%= f.password_field :old_password, class: 'form-control' %>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <%= f.submit "Submit", class: "btn btn-primary" %>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
+
+    <% if @user.patient? %>
+      <%= form_for(@patient, url: patient_path(@user), method: :post) do |f| %>
+          <div class="input-group">
+            <%= f.label :birthday %>
+            <%= f.date_field :birthday, class: 'form-control' %>
+          </div>
+
+          <div class="input-group">
+            <%= f.label :address %>
+            <%= f.text_field :address, class: 'form-control' %>
+          </div>
 
         <%= f.submit "Save changes", class: "btn btn-primary" %>
+      <% end %>
     <% end %>
-    </div>
+
+    <% if @user.doctor? %>
+        <%= form_for(@doctor, url: doctor_path(@user), method: :post) do |f| %>
+            <div class="input-group">
+              <%= f.label :birthday %>
+              <%= f.date_field :birthday, class: 'form-control' %>
+            </div>
+
+            <div class="input-group">
+              <%= f.label :position %>
+              <%= f.text_field :position, class: 'form-control' %>
+            </div>
+
+            <%= f.submit "Save changes", class: "btn btn-primary" %>
+        <% end %>
+    <% end %>
   </div>
 </div>

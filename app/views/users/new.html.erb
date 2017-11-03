@@ -32,6 +32,11 @@
                            'aria-label' => :password_confirmation,
                            'aria-describedBy' => 'basic-addon1' %>
         </div>
+        <%= f.radio_button :role, 'patient', class: "form-check", :checked => true  %>
+        <%= label :role_patient, 'Patient' %>
+        <br>
+        <%= f.radio_button :role, 'doctor', class: "form-check" %>
+        <%= label :role_doctor, 'Doctor' %>
 
         <%= f.submit "Submit", class: "btn btn-success btn-lg center-block" %>
     <% end %>

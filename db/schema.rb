@@ -10,7 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171012125254) do
+ActiveRecord::Schema.define(version: 20171031135006) do
+
+  create_table "diseases", force: :cascade do |t|
+    t.string "diagnosis"
+    t.text "symptoms"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "doctor_infos", force: :cascade do |t|
+    t.date "birthday"
+    t.integer "user_id"
+    t.string "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_doctor_infos_on_user_id", unique: true
+  end
+
+  create_table "doctor_patients", force: :cascade do |t|
+    t.integer "doctor_id"
+    t.integer "patient_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "patient_infos", force: :cascade do |t|
+    t.date "birthday"
+    t.string "address"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_patient_infos_on_user_id", unique: true
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -19,6 +52,7 @@ ActiveRecord::Schema.define(version: 20171012125254) do
     t.datetime "updated_at", null: false
     t.string "password_digest"
     t.string "remember_digest"
+    t.integer "role"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

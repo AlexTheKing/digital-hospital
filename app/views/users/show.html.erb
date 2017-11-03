@@ -3,5 +3,48 @@
       <div class="alert alert-<%= message_type %>"><%= message %></div>
   <% end %>
   <h3><%= @user.name %></h3>
-  <h4><%= @user.email %></h4>
+  <h5><%= @user.email %></h5>
+  <br>
+
+  <% if @user.patient? %>
+    <% if @patient.has_nil? %>
+        <div class="alert alert-danger">
+          <h4>Needs to be updated:</h4>
+          <ul>
+            <% @patient.error_messages.each do |message| %>
+                <li><h5><%= message %></h5></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+    <% unless @patient.birthday.nil? %>
+      <h4><%= "Date of birth: #{@patient.birthday}" %></h4>
+    <% end %>
+    <% unless @patient.address.nil? %>
+        <h4><%= "Address: #{@patient.address}" %></h4>
+    <% end %>
+  <% end %>
+
+  <% if @user.doctor? %>
+      <% if @doctor.has_nil? %>
+          <div class="alert alert-danger">
+            <h4>Needs to be updated:</h4>
+            <ul>
+              <% @doctor.error_messages.each do |message| %>
+                  <li><h5><%= message %></h5></li>
+              <% end %>
+            </ul>
+          </div>
+      <% end %>
+      <% unless @doctor.birthday.nil? %>
+          <h4><%= "Date of birth: #{@doctor.birthday}" %></h4>
+      <% end %>
+      <% unless @doctor.position.nil? %>
+          <h4><%= "Position: #{@doctor.position}" %></h4>
+      <% end %>
+  <% end %>
+
+  <button type="button" class="btn btn-success btn-lg btn-edit">
+    <%= link_to "Edit private information", edit_user_path(@user) %>
+  </button>
 </div>

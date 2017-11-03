@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  diagnosis: MyString
+  symptoms: MyText
+  user_id: 1
+
+two:
+  diagnosis: MyString
+  symptoms: MyText
+  user_id: 1

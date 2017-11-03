@@ -98,7 +98,7 @@ footer {
   margin-bottom: 14px;
 }
 
-input[type=submit] {
+input[type=submit], .btn-submit {
   padding-left: 10%;
   padding-right: 10%;
   margin: auto;
@@ -120,4 +120,13 @@ input[type=submit] {
 
 .inline {
   margin-left: 20px;
+}
+
+.btn-edit {
+  a {
+    color: white;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }

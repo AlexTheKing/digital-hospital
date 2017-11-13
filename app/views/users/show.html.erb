@@ -6,7 +6,8 @@
   <h5><%= @user.email %></h5>
   <br>
 
-  <% if @user.patient? %>
+  <!-- PATIENT -->
+  <% if @user.patient? and current_user? @user %>
     <% if @patient.has_nil? %>
         <div class="alert alert-danger">
           <h4>Needs to be updated:</h4>
@@ -17,15 +18,21 @@
           </ul>
         </div>
     <% end %>
-    <% unless @patient.birthday.nil? %>
-      <h4><%= "Date of birth: #{@patient.birthday}" %></h4>
-    <% end %>
+    <!-- PATIENT PRIVATE INFO-->
     <% unless @patient.address.nil? %>
         <h4><%= "Address: #{@patient.address}" %></h4>
     <% end %>
   <% end %>
 
-  <% if @user.doctor? %>
+  <!--PATIENT PUBLIC INFO-->
+  <% if @user.patient? %>
+      <% unless @patient.birthday.nil? %>
+          <h4><%= "Date of birth: #{@patient.birthday}" %></h4>
+      <% end %>
+  <% end %>
+
+  <!-- DOCTOR -->
+  <% if @user.doctor? and current_user? @user %>
       <% if @doctor.has_nil? %>
           <div class="alert alert-danger">
             <h4>Needs to be updated:</h4>
@@ -36,15 +43,107 @@
             </ul>
           </div>
       <% end %>
+      <!--DOCTOR PRIVATE INFO-->
       <% unless @doctor.birthday.nil? %>
           <h4><%= "Date of birth: #{@doctor.birthday}" %></h4>
       <% end %>
+  <% end %>
+
+  <!--DOCTOR PUBLIC INFO-->
+  <% if @user.doctor? %>
       <% unless @doctor.position.nil? %>
           <h4><%= "Position: #{@doctor.position}" %></h4>
       <% end %>
   <% end %>
 
-  <button type="button" class="btn btn-success btn-lg btn-edit">
-    <%= link_to "Edit private information", edit_user_path(@user) %>
-  </button>
+  <!--EDIT BUTTON-->
+  <% if current_user? @user %>
+    <button type="button" class="btn btn-success btn-lg btn-edit">
+      <%= link_to "Edit private information", edit_user_path(@user) %>
+    </button>
+  <% end %>
+
+  <!--PATIENT PRIVATE INFO-->
+  <% if @user.patient? and current_user? @user %>
+      <hr>
+      <% unless @doctors.nil? %>
+        <h3>Your doctors</h3>
+        <ul>
+          <% @doctors.each do |title, user| %>
+              <li><h4><%= link_to title, user %></h4></li>
+          <% end %>
+        </ul>
+      <% end %>
+  <% end %>
+
+  <!--PATIENT HALF PUBLIC INFO WITH ACCESS FOR DOCTORS-->
+  <% if @user.patient? and (current_user? @user or current_user.doctor?)%>
+      <hr>
+      <% unless @diseases.nil? %>
+          <h3>Diseases
+            <% if current_user.doctor? %>
+              <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#diseaseModal">
+                +
+              </button>
+            <% end %>
+          </h3>
+          <% if current_user.doctor? %>
+              <!-- Modal -->
+              <div class="modal fade" id="diseaseModal" tabindex="-1" role="dialog" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="diseaseModalLabel">Add disease to list</h3>
+                    </div>
+                    <%= form_for(@disease, url: disease_path(@patient), method: :post) do |f| %>
+                      <div class="modal-body">
+                          <div class="input-group">
+                            <%= f.label :diagnosis %>
+                            <%= f.text_field :diagnosis, class: 'form-control' %>
+                          </div>
+                          <div class="input-group">
+                            <%= f.label :symptoms %>
+                            <%= f.text_field :symptoms, class: 'form-control' %>
+                          </div>
+                          <div class="input-group">
+                            <%= f.label :treatment %>
+                            <%= f.text_field :treatment, class: 'form-control' %>
+                          </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <%= f.submit "Save", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+          <% end %>
+          <ul>
+            <% @diseases.each do |disease| %>
+                <hr>
+              <li>
+                <h4><%= "%s, %s" % [disease.created_at.strftime('%d.%m.%y'), disease.diagnosis] %></h4>
+                <h4>Symptoms: <%= disease.symptoms %></h4>
+                <h4>Treatment: <%= disease.treatment %></h4>
+              </li>
+            <% end %>
+          </ul>
+      <% end %>
+  <% end %>
+
+  <!--DOCTOR PRIVATE INFO-->
+  <% if @user.doctor? and current_user? @user %>
+      <hr>
+      <% unless @patients.nil? %>
+        <h3>Your patients:</h3>
+        <ul>
+          <% @patients.each do |user| %>
+              <li><h4><%= link_to user.name, user %></h4></li>
+          <% end %>
+        </ul>
+      <% end %>
+  <% end %>
+
 </div>

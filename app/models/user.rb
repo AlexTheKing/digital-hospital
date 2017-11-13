@@ -4,9 +4,9 @@ class User < ApplicationRecord
   before_save { email.downcase! }
   after_create do |user_instance|
     if user_instance.patient?
-      PatientInfo.new(id:user_instance.id).save
+      PatientInfo.new(user_id:user_instance.id).save
     elsif user_instance.doctor?
-      DoctorInfo.new(id:user_instance.id).save
+      DoctorInfo.new(user_id:user_instance.id).save
     end
   end
   validates :name, presence: true,

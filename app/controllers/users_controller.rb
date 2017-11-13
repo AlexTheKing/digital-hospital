@@ -1,10 +1,58 @@
 class UsersController < ApplicationController
+  before_action :logged_in_user, only: [:edit, :update]
+  before_action :correct_user, only: [:edit, :update]
+
+  def logged_in_user
+    unless logged_in?
+      flash[:danger] = "Please log in."
+      redirect_to login_url
+    end
+  end
+
+  def correct_user
+    @user = User.find(params[:id])
+    redirect_to(root_url) unless current_user? @user
+  end
+
   def show
     @user = User.find params[:id]
     if @user.patient?
-      @patient = PatientInfo.find(@user.id)
+      # base info about patient
+      @patient = PatientInfo.find_by(user_id:@user.id)
+      # info about doctors healing patient
+      doctors_ids = DoctorPatient.where(patient_id: @patient.id).pluck(:doctor_id)
+      @doctors = []
+      unless doctors_ids.nil?
+        doctors_ids.each do |doctor_id|
+          doctor = DoctorInfo.find(doctor_id)
+          user_id = doctor.user_id
+          user = User.find(user_id)
+          data = [user.name];
+          unless doctor.position.nil?
+            data.push doctor.position
+          end
+          title = data.join(', ')
+          @doctors.push [title, user]
+        end
+      end
+      # info about diseases
+      @diseases = Disease.where(patient_id: @patient.id)
+      # disease object for patient if current user is DOCTOR
+      if current_user.doctor?
+        @disease = Disease.new
+        #@disease.patient_id = @patient.id
+      end
     else
-      @doctor = DoctorInfo.find(@user.id)
+      @doctor = DoctorInfo.find_by(user_id:@user.id)
+      patients_ids = DoctorPatient.where(doctor_id: @doctor.id).pluck(:patient_id)
+      @patients = []
+      unless patients_ids.nil?
+        patients_ids.each do |patient_id|
+          user_id = PatientInfo.find(patient_id).user_id
+          user = User.find(user_id)
+          @patients.push user
+        end
+      end
     end
   end
 
@@ -33,9 +81,9 @@ class UsersController < ApplicationController
   def edit
     @user = User.find(params[:id])
     if @user.patient?
-      @patient = PatientInfo.find(@user.id)
+      @patient = PatientInfo.find_by(user_id:@user.id)
     else
-      @doctor = DoctorInfo.find(@user.id)
+      @doctor = DoctorInfo.find_by(user_id:@user.id)
     end
   end
 
@@ -55,7 +103,7 @@ class UsersController < ApplicationController
 
   def update_patient
     @user = User.find(params[:id])
-    @patient = PatientInfo.find(@user.id)
+    @patient = PatientInfo.find_by(user_id:@user.id)
     if @patient.update_attributes(filter_patient_params)
       flash.now[:success] = 'Account was successfully updated!'
     else
@@ -66,13 +114,27 @@ class UsersController < ApplicationController
 
   def update_doctor
     @user = User.find(params[:id])
-    @doctor = DoctorInfo.find(params[:id])
+    @doctor = DoctorInfo.find(user_id:@user.id)
     if @doctor.update_attributes(filter_doctor_params)
       flash.now[:success] = 'Account was successfully updated!'
     else
       flash.now[:danger] = 'Account was not updated. Please try again later!'
     end
     render 'edit'
+  end
+
+  def add_disease
+    patient = PatientInfo.find_by(params[:id])
+    filtered_params = filter_disease_params
+    filtered_params[:patient_id] = patient.id
+    user = User.find(patient.user_id)
+    @disease = Disease.new(filtered_params)
+    if @disease.save
+      flash.now[:success] = 'Disease was added to list'
+    else
+      flash.now[:danger] = 'No changes were performed. Please try again later!'
+    end
+    redirect_to user
   end
 
   private
@@ -100,5 +162,11 @@ class UsersController < ApplicationController
   def filter_doctor_params
     params.require(:doctor_info).permit(:birthday,
                                         :position)
+  end
+
+  def filter_disease_params
+    params.require(:disease).permit(:diagnosis,
+                                    :symptoms,
+                                    :treatment)
   end
 end

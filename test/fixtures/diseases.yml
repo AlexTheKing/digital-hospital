@@ -2,10 +2,16 @@
 
 one:
   diagnosis: MyString
-  symptoms: MyText
-  user_id: 1
+  string: MyString
+  symptoms: MyString
+  text: MyString
+  patient_id: MyString
+  integer: MyString
 
 two:
   diagnosis: MyString
-  symptoms: MyText
-  user_id: 1
+  string: MyString
+  symptoms: MyString
+  text: MyString
+  patient_id: MyString
+  integer: MyString

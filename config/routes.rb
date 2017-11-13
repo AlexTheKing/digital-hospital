@@ -10,5 +10,6 @@ Rails.application.routes.draw do
   resources :users
   match '/patient/:id' => 'users#update_patient', via: :post, as: 'patient'
   match '/doctor/:id' => 'users#update_doctor', via: :post, as: 'doctor'
+  match '/disease/:id' => 'users#add_disease', via: :post, as: 'disease'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

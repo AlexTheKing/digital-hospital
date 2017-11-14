@@ -11,5 +11,6 @@ Rails.application.routes.draw do
   match '/patient/:id' => 'users#update_patient', via: :post, as: 'patient'
   match '/doctor/:id' => 'users#update_doctor', via: :post, as: 'doctor'
   match '/disease/:id' => 'users#add_disease', via: :post, as: 'disease'
+  match '/patients' => 'users#show_patients', via: :get, as: 'patients'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

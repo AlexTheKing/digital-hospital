@@ -27,11 +27,7 @@ class UsersController < ApplicationController
           doctor = DoctorInfo.find(doctor_id)
           user_id = doctor.user_id
           user = User.find(user_id)
-          data = [user.name];
-          unless doctor.position.nil?
-            data.push doctor.position
-          end
-          title = data.join(', ')
+          title = doctor.get_title user
           @doctors.push [title, user]
         end
       end
@@ -48,9 +44,10 @@ class UsersController < ApplicationController
       @patients = []
       unless patients_ids.nil?
         patients_ids.each do |patient_id|
-          user_id = PatientInfo.find(patient_id).user_id
-          user = User.find(user_id)
-          @patients.push user
+          patient = PatientInfo.find(patient_id)
+          user = User.find(patient.user_id)
+          title = patient.get_title user
+          @patients.push [title, user]
         end
       end
     end
@@ -135,6 +132,15 @@ class UsersController < ApplicationController
       flash.now[:danger] = 'No changes were performed. Please try again later!'
     end
     redirect_to user
+  end
+
+  def show_patients
+    @patients = []
+    PatientInfo.all.each do |patient|
+      user = User.find(patient.user_id)
+      title = patient.get_title user
+      @patients.push [title, user]
+    end
   end
 
   private

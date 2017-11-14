@@ -1,0 +1,11 @@
+<div class="container bg-light">
+  <% flash.each do |message_type, message| %>
+      <div class="alert alert-<%= message_type %>"><%= message %></div>
+  <% end %>
+  <h1>Registered patients</h1>
+  <hr>
+  <% @patients.each do |title, user| %>
+    <h3><%= link_to title, user %></h3>
+  <% end %>
+
+</div>

@@ -139,8 +139,8 @@
       <% unless @patients.nil? %>
         <h3>Your patients:</h3>
         <ul>
-          <% @patients.each do |user| %>
-              <li><h4><%= link_to user.name, user %></h4></li>
+          <% @patients.each do |title, user| %>
+              <li><h4><%= link_to title, user %></h4></li>
           <% end %>
         </ul>
       <% end %>

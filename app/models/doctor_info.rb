@@ -13,4 +13,12 @@ class DoctorInfo < ApplicationRecord
     end
     messages
   end
+
+  def get_title(user)
+    data = [user.name]
+    unless self[:position].nil?
+      data.push self[:position]
+    end
+    data.join(', ')
+  end
 end

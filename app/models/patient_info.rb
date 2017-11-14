@@ -13,4 +13,12 @@ class PatientInfo < ApplicationRecord
     end
     messages
   end
+
+  def get_title(user)
+    data = [user.name]
+    unless self[:birthday].nil?
+      data.push self[:birthday].nil?
+    end
+    data.join(', ')
+  end
 end

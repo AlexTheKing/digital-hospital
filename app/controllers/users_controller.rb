@@ -1,6 +1,33 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:edit, :update]
+  before_action :logged_in_user, only: [:show, :edit, :update]
   before_action :correct_user, only: [:edit, :update]
+  before_action :is_doctor, only: [:show_patients]
+  before_action :show_foreign, only: [:show]
+
+  def show_foreign
+    user = current_user
+    if user.id != params[:id].to_i and user.patient?
+      if DoctorInfo.exists? params[:id]
+        patient_id = PatientInfo.find_by(user_id: user.id).id
+        doctors_ids = DoctorPatient.where(patient_id: patient_id).pluck(:doctor_id)
+        doctor_id = DoctorInfo.find_by(user_id:params[:id]).id
+        unless doctors_ids.include? doctor_id
+          flash[:danger] = "You can see only your doctors' profiles"
+          redirect_to user
+        end
+      else
+        flash[:danger] = "You have no access to see this profile"
+        redirect_to user
+      end
+    end
+  end
+
+  def is_doctor
+    unless current_user.doctor?
+      flash[:danger] = "This information accessible only for doctors"
+      redirect_to current_user
+    end
+  end
 
   def logged_in_user
     unless logged_in?
@@ -121,15 +148,25 @@ class UsersController < ApplicationController
   end
 
   def add_disease
-    patient = PatientInfo.find_by(params[:id])
+    patient = PatientInfo.find(params[:id])
     filtered_params = filter_disease_params
-    filtered_params[:patient_id] = patient.id
+    filtered_params[:patient_id] = params[:id]
     user = User.find(patient.user_id)
     @disease = Disease.new(filtered_params)
-    if @disease.save
-      flash.now[:success] = 'Disease was added to list'
+    doctor = DoctorInfo.find_by(user_id: current_user.id)
+    if DoctorPatient.where(doctor_id: doctor.id, patient_id: patient.id).empty?
+      doctor_patient = DoctorPatient.new(doctor_id: doctor.id, patient_id: patient.id)
+      if doctor_patient.save and @disease.save
+        flash.now[:success] = 'Disease was added to list'
+      else
+        flash.now[:danger] = 'No changes were performed. Please try again later!'
+      end
     else
-      flash.now[:danger] = 'No changes were performed. Please try again later!'
+      if @disease.save
+        flash.now[:success] = 'Disease was added to list'
+      else
+        flash.now[:danger] = 'No changes were performed. Please try again later!'
+      end
     end
     redirect_to user
   end
@@ -141,6 +178,7 @@ class UsersController < ApplicationController
       title = patient.get_title user
       @patients.push [title, user]
     end
+    @patients = @patients.paginate(page: params[:page])
   end
 
   private

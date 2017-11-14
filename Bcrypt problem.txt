@@ -1,0 +1,5 @@
+For Windows:
+
+1) Uninstall all bcrypt gem versions with "gem uninstall bcrypt" and select option 3 (if exist)
+2) Uninstall all bcrypt-ruby gem versions with "gem uninstall bcrypt-ruby" and select option 3 (if exist)
+3) Install bcrypt using "gem install bcrypt --platform=ruby"
